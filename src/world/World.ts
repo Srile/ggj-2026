@@ -5,6 +5,7 @@ import Dialogue from './Dialogue'
 import Lobotomite from './Lobotomite'
 import Interactable from './Interactable'
 import InteractionBubble from './InteractionBubble'
+import NavigationManager from '../core/NavigationManager'
 
 export default class World {
     experience: Experience
@@ -14,6 +15,7 @@ export default class World {
     lobotomite?: Lobotomite
     dialogue: Dialogue
     interactables: Interactable[]
+    navigationManager: NavigationManager
 
     interactionBubble: InteractionBubble
 
@@ -45,13 +47,17 @@ export default class World {
         // Interaction Bubble
         this.interactionBubble = new InteractionBubble()
         this.scene.add(this.interactionBubble)
+
+        this.navigationManager = new NavigationManager()
     }
 
     setKitchen() {
         this.kitchen = this.resources.items.kitchen
         enablePS1Style(this.kitchen.scene)
         this.scene.add(this.kitchen.scene)
-        this.kitchen.scene.scale.set(8, 8, 8)
+        // this.kitchen.scene.scale.set(8, 8, 8)
+        
+        this.navigationManager.setLevel(this.kitchen.scene)
     }
 
     setCharacter() {

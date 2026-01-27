@@ -40,7 +40,8 @@ export default class Camera {
             0.1,
             100
         )
-        this.instance.position.set(-1.5, 1.6, 3) 
+        this.instance.position.set(-1.5, 1.6, 1) 
+        this.instance.rotation.order = 'YXZ'
         this.instance.lookAt(0, 1, 0)
         this.scene.add(this.instance)
     }
@@ -84,6 +85,9 @@ export default class Camera {
         this.isLocked = false
         this.targetPosition = null
         this.targetLookAt = null
+
+        // Force update the rotation from quaternion to synchronize with PointerLockControls
+        this.instance.rotation.setFromQuaternion(this.instance.quaternion)
     }
 
     update() {
@@ -132,8 +136,20 @@ export default class Camera {
                 this.velocity.x -= this.direction.x * 40.0 * delta
             }
 
+            const oldPosition = this.instance.position.clone()
+
             this.controls.moveRight(-this.velocity.x * delta)
             this.controls.moveForward(-this.velocity.z * delta)
+            
+            // Check if potential new position is on navmesh
+            if (this.experience.world && this.experience.world.navigationManager) {
+                if (!this.experience.world.navigationManager.isSafe(this.instance.position)) {
+                    // blocked
+                    this.instance.position.copy(oldPosition)
+                    this.velocity.x = 0
+                    this.velocity.z = 0
+                }
+            }
             
             // Force Y to stay constant (standing height)
             // Note: PointerLockControls.moveForward/moveRight usually move on the XZ plane if the camera is upright,
