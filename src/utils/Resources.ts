@@ -68,7 +68,7 @@ export default class Resources extends EventEmitter {
                     onload: () => {
                         this.sourceLoaded(source, sound)
                     },
-                    onloaderror: (id, error) => {
+                    onloaderror: (_id, error) => {
                         console.warn(`Failed to load sound ${source.path}:`, error)
                         this.sourceLoaded(source, sound)
                     }
@@ -82,7 +82,7 @@ export default class Resources extends EventEmitter {
                 // Or easier: treat the sequence as one item in 'this.items', 
                 // but we need to wait for all inner sounds to load.
 
-                for (let i = 0; i <= total; i++) {
+                for (let i = 0; i < total; i++) {
                     const sound = new Howl({
                         src: [`${source.path}${i}.${source.extension}`],
                         preload: true,
@@ -92,7 +92,7 @@ export default class Resources extends EventEmitter {
                                 this.sourceLoaded(source, sounds)
                             }
                         },
-                        onloaderror: (id, error) => {
+                        onloaderror: (_id, error) => {
                             console.warn(`Failed to load sound ${source.path}${i}.${source.extension}:`, error)
                             loadedCount++
                             if (loadedCount === total) {
