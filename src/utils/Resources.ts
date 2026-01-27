@@ -26,6 +26,7 @@ export default class Resources extends EventEmitter {
         this.loaders.gltfLoader = new GLTFLoader()
         this.loaders.textureLoader = new THREE.TextureLoader()
         this.loaders.cubeTextureLoader = new THREE.CubeTextureLoader()
+        this.loaders.fileLoader = new THREE.FileLoader()
     }
 
     startLoading() {
@@ -50,6 +51,13 @@ export default class Resources extends EventEmitter {
                     source.path,
                     (file: any) => {
                         this.sourceLoaded(source, file)
+                    }
+                )
+            } else if (source.type === 'json') {
+                this.loaders.fileLoader.load(
+                    source.path,
+                    (file: string) => {
+                        this.sourceLoaded(source, JSON.parse(file))
                     }
                 )
             }
