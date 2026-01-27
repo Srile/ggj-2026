@@ -34,8 +34,8 @@ export default class Renderer {
         this.instance.toneMappingExposure = 1.75
         
         // Shadows
-        this.instance.shadowMap.enabled = true
-        this.instance.shadowMap.type = THREE.PCFSoftShadowMap
+        this.instance.shadowMap.enabled = false
+        // this.instance.shadowMap.type = THREE.PCFSoftShadowMap
 
         this.instance.setClearColor('#211d20')
         this.instance.setSize(this.sizes.width, this.sizes.height)
@@ -43,7 +43,10 @@ export default class Renderer {
 
         // Post Processing - PS1 Style
         this.composer = new EffectComposer(this.instance)
-        const renderPixelatedPass = new RenderPixelatedPass(4, this.scene, this.camera.instance)
+        const renderPixelatedPass = new RenderPixelatedPass(4, this.scene, this.camera.instance, {
+            normalEdgeStrength: 0.3,
+            depthEdgeStrength: 0.0
+        })
         this.composer.addPass(renderPixelatedPass)
     }
 
