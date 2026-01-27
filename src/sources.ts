@@ -5,6 +5,11 @@ export default [
         path: 'kitchen.glb'
     },
     {
+        name: 'character',
+        type: 'gltfModel',
+        path: 'lobotomite.glb'
+    },
+    {
         name: 'dialogue',
         type: 'json',
         path: 'dialogue.json'

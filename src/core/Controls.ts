@@ -3,21 +3,30 @@ import Experience from './Experience'
 
 export default class Controls extends EventEmitter {
     experience: Experience
-    keys: { forward: boolean, backward: boolean, left: boolean, right: boolean }
+    keys: { [key: string]: boolean }
+    enabled: boolean
 
     constructor() {
         super()
+
         this.experience = new Experience()
-        
+
         this.keys = {
             forward: false,
             backward: false,
             left: false,
-            right: false
+            right: false,
+            shift: false
         }
+        this.enabled = true
 
-        window.addEventListener('keydown', (event) => this.onKeyDown(event))
-        window.addEventListener('keyup', (event) => this.onKeyUp(event))
+        window.addEventListener('keydown', (event) => {
+            this.handleKeyDown(event)
+        })
+
+        window.addEventListener('keyup', (event) => {
+            this.handleKeyUp(event)
+        })
         
         // Listen on canvas for lock request
         if(this.experience.canvas) {
@@ -27,50 +36,103 @@ export default class Controls extends EventEmitter {
         }
     }
 
-    onKeyDown(event: KeyboardEvent) {
-        switch(event.code) {
-            case 'KeyW':
+    handleKeyDown(event: KeyboardEvent) {
+        if (!this.enabled) {
+            // Allow dialogue navigation even when movement is disabled
+            // But blocking movement keys
+            switch (event.code) {
+                case 'AccessoryButton1':
+                case 'Enter':
+                case 'Space':
+                case 'KeyE':
+                    this.trigger('interact')
+                    break
+                case 'ArrowUp':
+                case 'KeyW':
+                    this.trigger('navigateUp')
+                    break
+                case 'ArrowDown':
+                case 'KeyS':
+                    this.trigger('navigateDown')
+                    break
+            }
+            return
+        }
+
+        switch (event.code) {
             case 'ArrowUp':
+            case 'KeyW':
                 this.keys.forward = true
                 break
-            case 'KeyA':
             case 'ArrowLeft':
+            case 'KeyA':
                 this.keys.left = true
                 break
-            case 'KeyS':
             case 'ArrowDown':
+            case 'KeyS':
                 this.keys.backward = true
                 break
-            case 'KeyD':
             case 'ArrowRight':
+            case 'KeyD':
                 this.keys.right = true
                 break
+            case 'ShiftLeft':
+            case 'ShiftRight':
+                this.keys.shift = true
+                break
+            case 'AccessoryButton1':
+            case 'Enter':
+            case 'Space':
+            case 'KeyE':
+                this.trigger('interact')
+                break
         }
+
+        this.trigger('input', [this.keys])
     }
 
-    onKeyUp(event: KeyboardEvent) {
-        switch(event.code) {
-            case 'KeyW':
+    handleKeyUp(event: KeyboardEvent) {
+        // Always listen to keyup to prevent stuck keys if disabled mid-press
+        switch (event.code) {
             case 'ArrowUp':
+            case 'KeyW':
                 this.keys.forward = false
                 break
-            case 'KeyA':
             case 'ArrowLeft':
+            case 'KeyA':
                 this.keys.left = false
                 break
-            case 'KeyS':
             case 'ArrowDown':
+            case 'KeyS':
                 this.keys.backward = false
                 break
-            case 'KeyD':
             case 'ArrowRight':
+            case 'KeyD':
                 this.keys.right = false
                 break
+            case 'ShiftLeft':
+            case 'ShiftRight':
+                this.keys.shift = false
+                break
+        }
+
+        this.trigger('input', [this.keys])
+    }
+
+    setEnabled(enabled: boolean) {
+        this.enabled = enabled
+        if (!enabled) {
+            // Reset keys
+            this.keys.forward = false
+            this.keys.backward = false
+            this.keys.left = false
+            this.keys.right = false
+            this.keys.shift = false
+        this.trigger('input', [this.keys])
         }
     }
 
     update() {
-        // We trigger 'input' every frame with the current state
-        this.trigger('input', [this.keys])
+        
     }
 }

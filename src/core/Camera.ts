@@ -18,6 +18,10 @@ export default class Camera {
     velocity = new THREE.Vector3()
     direction = new THREE.Vector3()
 
+    isLocked = false
+    targetPosition: THREE.Vector3 | null = null
+    targetLookAt: THREE.Vector3 | null = null
+
     constructor() {
         this.experience = new Experience()
         this.sizes = this.experience.sizes
@@ -36,7 +40,7 @@ export default class Camera {
             0.1,
             100
         )
-        this.instance.position.set(-1.5, 1.7, 3) 
+        this.instance.position.set(-1.5, 1.6, 3) 
         this.instance.lookAt(0, 1, 0)
         this.scene.add(this.instance)
     }
@@ -63,7 +67,53 @@ export default class Camera {
         this.instance.updateProjectionMatrix()
     }
 
+    lockToTarget(target: THREE.Object3D, offset: THREE.Vector3) {
+        this.isLocked = true
+        // Position to stand at
+        this.targetPosition = target.position.clone().add(offset)
+        // Ensure Y is correct (standing height)
+        this.targetPosition.y = 1.6 
+        
+        // Where to look at (the target object)
+        this.targetLookAt = target.position.clone()
+        // Maybe look at eye level
+        this.targetLookAt.y = 1.5 
+    }
+
+    unlock() {
+        this.isLocked = false
+        this.targetPosition = null
+        this.targetLookAt = null
+    }
+
     update() {
+        if (this.isLocked && this.targetPosition && this.targetLookAt) {
+            const delta = this.experience.time.delta / 1000
+            
+            // Lerp Position
+            this.instance.position.lerp(this.targetPosition, 5 * delta)
+            
+            // Lerp Rotation (via lookAt)
+            // Ideally we'd slerp the quaternion, but repeatedly calling lookAt with lerped target might work
+            // Or create a dummy target vector that lerps towards the real target
+            
+            // Simple approach: look at the target directly each frame (which changes as user moves)
+            // But user is moving.
+            
+            // Better approach for smooth rotation:
+            const targetQuaternion = new THREE.Quaternion()
+            const currentQuaternion = this.instance.quaternion.clone()
+            
+            this.instance.lookAt(this.targetLookAt)
+            targetQuaternion.copy(this.instance.quaternion)
+            
+            // Revert to current for slerp
+            this.instance.quaternion.copy(currentQuaternion)
+            this.instance.quaternion.slerp(targetQuaternion, 5 * delta)
+
+            return
+        }
+
         if (this.controls.isLocked) {
             const delta = this.experience.time.delta / 1000 // Convert to seconds
             

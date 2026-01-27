@@ -1,5 +1,35 @@
 {
-    "welcome": "Welcome to the kitchen!",
-    "stove": "It's a stove. You can cook here.",
-    "fridge": "It's a fridge. Check for ingredients."
+    "welcome": {
+        "text": "Welcome to the kitchen!",
+        "next": "stove"
+    },
+    "stove": {
+        "text": "It's a stove. You can cook here.",
+        "next": "fridge"
+    },
+    "fridge": {
+        "text": "It's a fridge. Check for ingredients.",
+        "next": "check_ingredients"
+    },
+    "check_ingredients": {
+        "text": "Do you want to check for ingredients?",
+        "choices": [
+            {
+                "text": "Yes",
+                "next": "ingredients_found"
+            },
+            {
+                "text": "No",
+                "next": "ingredients_ignored"
+            }
+        ]
+    },
+    "ingredients_found": {
+        "text": "You found some mysterious eggs.",
+        "next": null
+    },
+    "ingredients_ignored": {
+        "text": "You decided to ignore the fridge.",
+        "next": null
+    }
 }
