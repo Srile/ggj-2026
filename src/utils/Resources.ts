@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import { GLTFLoader } from 'three/examples/jsm/loaders/GLTFLoader.js'
 import { EventEmitter } from './EventEmitter'
+import { Howl } from 'howler'
 
 export default class Resources extends EventEmitter {
     sources: any[]
@@ -60,6 +61,47 @@ export default class Resources extends EventEmitter {
                         this.sourceLoaded(source, JSON.parse(file))
                     }
                 )
+            } else if (source.type === 'audio') {
+                const sound = new Howl({
+                    src: [source.path],
+                    preload: true,
+                    onload: () => {
+                        this.sourceLoaded(source, sound)
+                    },
+                    onloaderror: (id, error) => {
+                        console.warn(`Failed to load sound ${source.path}:`, error)
+                        this.sourceLoaded(source, sound)
+                    }
+                })
+            } else if (source.type === 'audioSequence') {
+                const sounds: Howl[] = []
+                let loadedCount = 0
+                const total = source.count
+                
+                // We'll increment global loaded only once the entire sequence is ready
+                // Or easier: treat the sequence as one item in 'this.items', 
+                // but we need to wait for all inner sounds to load.
+
+                for (let i = 0; i <= total; i++) {
+                    const sound = new Howl({
+                        src: [`${source.path}${i}.${source.extension}`],
+                        preload: true,
+                        onload: () => {
+                            loadedCount++
+                            if (loadedCount === total) {
+                                this.sourceLoaded(source, sounds)
+                            }
+                        },
+                        onloaderror: (id, error) => {
+                            console.warn(`Failed to load sound ${source.path}${i}.${source.extension}:`, error)
+                            loadedCount++
+                            if (loadedCount === total) {
+                                this.sourceLoaded(source, sounds)
+                            }
+                        }
+                    })
+                    sounds.push(sound)
+                }
             }
         }
     }

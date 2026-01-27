@@ -97,8 +97,15 @@ export default class Dialogue {
         let index = 0
 
         this.typingInterval = setInterval(() => {
-            this.textElement!.innerHTML += text.charAt(index)
+            const char = text.charAt(index)
+            this.textElement!.innerHTML += char
             index++
+
+            // Play mumble sound
+            if (index % 2 === 0 && char !== ' ') {
+                const voice = this.currentTextObject.voice || 'beep_mind'
+                this.experience.audioManager.play(voice)
+            }
 
             if (index >= text.length) {
                 this.finishTyping()
