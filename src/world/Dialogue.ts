@@ -72,8 +72,6 @@ export default class Dialogue {
 
         // Disable movement
         this.experience.controls.setEnabled(false)
-        // Unlock pointer to allow mouse interaction with UI
-        this.experience.camera.controls.unlock()
 
         // Prepare UI
         this.overlay.classList.remove('hidden')
@@ -210,8 +208,6 @@ export default class Dialogue {
         this.experience.controls.setEnabled(true)
         // Unlock camera target (stop lerping)
         this.experience.camera.unlock()
-        // Lock pointer controls (resume FPS view)
-        this.experience.camera.controls.lock()
 
         this.overlay.classList.add('hidden')
         this.overlay.style.pointerEvents = 'none'
