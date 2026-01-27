@@ -2,7 +2,7 @@ import * as THREE from 'three'
 import Experience from '../core/Experience'
 import { enablePS1Style } from '../utils/ps1'
 import Dialogue from './Dialogue'
-import Character from './Character'
+import Lobotomite from './Lobotomite'
 import Interactable from './Interactable'
 import InteractionBubble from './InteractionBubble'
 
@@ -11,7 +11,7 @@ export default class World {
     scene: THREE.Scene
     resources: any
     kitchen: any
-    character: any
+    lobotomite?: Lobotomite
     dialogue: Dialogue
     interactables: Interactable[]
 
@@ -55,13 +55,12 @@ export default class World {
     }
 
     setCharacter() {
-        this.character = this.resources.items.character
-        this.scene.add(this.character.scene)
-        this.character.scene.position.set(-1.5, 0, -3)
+        const resource = this.resources.items.lobotomite
+        this.lobotomite = new Lobotomite(resource)
+        this.scene.add(this.lobotomite.object)
+        this.lobotomite.object.position.set(-1.5, 0, -3)
 
-        // Create Interactable Character
-        const characterInteractable = new Character(this.character.scene)
-        this.interactables.push(characterInteractable)
+        this.interactables.push(this.lobotomite)
     }
 
     handleInteract() {
@@ -80,6 +79,9 @@ export default class World {
     }
 
     update() {
+        if (this.lobotomite)
+            this.lobotomite.update()
+
         // Check for interactables to show bubble
         if (this.dialogue.overlay && !this.dialogue.overlay.classList.contains('hidden')) {
              this.interactionBubble.visible = false

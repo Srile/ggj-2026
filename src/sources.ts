@@ -7,6 +7,11 @@ export default [
     {
         name: 'character',
         type: 'gltfModel',
+        path: 'character.glb'
+    },
+    {
+        name: 'lobotomite',
+        type: 'gltfModel',
         path: 'lobotomite.glb'
     },
     {

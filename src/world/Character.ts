@@ -13,7 +13,7 @@ export default class Character extends Interactable {
         
         // Lock camera
         // Calculate a position 2 units in front of the character (relative to its facing)
-        const offset = new THREE.Vector3(0, 0, 2)
+        const offset = new THREE.Vector3(0, 0, 1)
         offset.applyQuaternion(this.object.quaternion)
         this.experience.camera.lockToTarget(this.object, offset)
     }
