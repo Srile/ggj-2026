@@ -1,5 +1,5 @@
 import * as THREE from 'three'
-import { OrbitControls } from 'three/examples/jsm/controls/OrbitControls.js'
+import { PointerLockControls } from 'three/examples/jsm/controls/PointerLockControls.js'
 import Experience from './Experience'
 
 export default class Camera {
@@ -8,7 +8,15 @@ export default class Camera {
     scene: THREE.Scene
     canvas: HTMLCanvasElement
     instance!: THREE.PerspectiveCamera
-    controls!: OrbitControls
+    controls!: PointerLockControls
+    
+    // Movement
+    moveForward = false
+    moveBackward = false
+    moveLeft = false
+    moveRight = false
+    velocity = new THREE.Vector3()
+    direction = new THREE.Vector3()
 
     constructor() {
         this.experience = new Experience()
@@ -18,22 +26,36 @@ export default class Camera {
 
         this.setInstance()
         this.setControls()
+        this.setEvents()
     }
 
     setInstance() {
         this.instance = new THREE.PerspectiveCamera(
-            35,
+            75,
             this.sizes.width / this.sizes.height,
             0.1,
             100
         )
-        this.instance.position.set(-0.5, 1.2, -1.5)
+        this.instance.position.set(-1.5, 1.7, 3) 
+        this.instance.lookAt(0, 1, 0)
         this.scene.add(this.instance)
     }
 
     setControls() {
-        this.controls = new OrbitControls(this.instance, this.canvas)
-        this.controls.enableDamping = true
+        this.controls = new PointerLockControls(this.instance, document.body)
+    }
+
+    setEvents() {
+        this.experience.controls.on('input', (keys: any) => {
+            this.moveForward = keys.forward
+            this.moveBackward = keys.backward
+            this.moveLeft = keys.left
+            this.moveRight = keys.right
+        })
+        
+        this.experience.controls.on('requestLock', () => {
+            this.controls.lock()
+        })
     }
 
     resize() {
@@ -42,6 +64,32 @@ export default class Camera {
     }
 
     update() {
-        this.controls.update()
+        if (this.controls.isLocked) {
+            const delta = this.experience.time.delta / 1000 // Convert to seconds
+            
+            // Damping (simulating friction)
+            this.velocity.x -= this.velocity.x * 10.0 * delta
+            this.velocity.z -= this.velocity.z * 10.0 * delta
+
+            this.direction.z = Number(this.moveForward) - Number(this.moveBackward)
+            this.direction.x = Number(this.moveRight) - Number(this.moveLeft)
+            this.direction.normalize()
+
+            if (this.moveForward || this.moveBackward) {
+                this.velocity.z -= this.direction.z * 40.0 * delta
+            }
+            if (this.moveLeft || this.moveRight) {
+                this.velocity.x -= this.direction.x * 40.0 * delta
+            }
+
+            this.controls.moveRight(-this.velocity.x * delta)
+            this.controls.moveForward(-this.velocity.z * delta)
+            
+            // Force Y to stay constant (standing height)
+            // Note: PointerLockControls.moveForward/moveRight usually move on the XZ plane if the camera is upright,
+            // but we ensure it here if needed. Actually moveForward in three.js PLC uses the camera's local forward vector
+            // projects onto the XZ plane.
+        }
     }
 }
+

@@ -1,6 +1,7 @@
 import * as THREE from 'three'
 import Sizes from '../utils/Sizes'
 import Time from '../utils/Time'
+import Controls from './Controls'
 import Camera from './Camera'
 import Renderer from './Renderer'
 import World from '../world/World'
@@ -18,6 +19,7 @@ export default class Experience {
     renderer!: Renderer
     resources!: Resources
     world!: World
+    controls!: Controls
     
     constructor(canvas?: HTMLCanvasElement) {
         // Singleton
@@ -35,6 +37,10 @@ export default class Experience {
         this.time = new Time()
         this.scene = new THREE.Scene()
         this.resources = new Resources(sources)
+        // Controls needs to be instantiated before Camera if Camera relies on it, 
+        // OR Camera accesses it via Experience singleton after both are created.
+        // Let's instantiate Controls here.
+        this.controls = new Controls()
         this.camera = new Camera()
         this.renderer = new Renderer()
         this.world = new World()
@@ -56,6 +62,7 @@ export default class Experience {
     }
 
     update() {
+        this.controls.update()
         this.camera.update()
         this.world.update()
         this.renderer.update()

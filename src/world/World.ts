@@ -19,18 +19,15 @@ export default class World {
         })
         
         // Light
-        const ambientLight = new THREE.AmbientLight(0xffffff, 0.8)
+        const ambientLight = new THREE.AmbientLight(0xffffff, 1.1)
         this.scene.add(ambientLight)
-        
-        const directionalLight = new THREE.DirectionalLight(0xffffff, 1.2)
-        directionalLight.position.set(5, 5, 5)
-        this.scene.add(directionalLight)
     }
 
     setKitchen() {
         this.kitchen = this.resources.items.kitchen
         enablePS1Style(this.kitchen.scene)
         this.scene.add(this.kitchen.scene)
+        this.kitchen.scene.scale.set(8, 8, 8)
     }
 
     update() {
