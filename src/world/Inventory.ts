@@ -56,7 +56,7 @@ export default class Inventory {
 
         // Setup Listeners
         if (this.container) {
-            this.container.addEventListener('click', (e) => {
+            this.container.addEventListener('click', (_) => {
                 // If closed, open it. 
                 // Don't close if clicking inside while open, unless it's close button (handled separately)
                 if (this.container?.classList.contains('closed')) {
