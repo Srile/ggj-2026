@@ -182,6 +182,8 @@ export default class Dialogue {
             this.finishTyping()
             return
         }
+
+        this.experience.audioManager.play('ui_click')
         
         // Handle choice selection with interact key
         if (this.currentTextObject?.choices) {

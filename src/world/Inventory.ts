@@ -89,12 +89,14 @@ export default class Inventory {
         this.isOpen = true
         this.container?.classList.remove('closed')
         this.experience.controls.setEnabled(false)
+        this.experience.audioManager.play('ui_whoosh')
     }
 
     close() {
         this.isOpen = false
         this.container?.classList.add('closed')
         this.experience.controls.setEnabled(true)
+        this.experience.audioManager.play('ui_whoosh')
     }
 
     setCategory(category: 'eyes' | 'nose' | 'mouth') {
@@ -108,6 +110,8 @@ export default class Inventory {
                 tab.classList.remove('active')
             }
         })
+
+        this.experience.audioManager.play('ui_click')
 
         // Populate Grid
         if (this.inventoryGrid) {
@@ -167,6 +171,8 @@ export default class Inventory {
                 layer = this.mouthLayer
                 break
         }
+
+        this.experience.audioManager.play('ui_meat')
 
         if (layer) {
             layer.src = `/face/${item}`

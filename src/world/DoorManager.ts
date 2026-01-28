@@ -80,8 +80,6 @@ export default class DoorManager {
     }
 
     async triggerEntrance(name: string, _entrance: THREE.Mesh) {
-        console.log(`Triggered ${name}`)
-        
         // Parse name: Entrance_Source_Target (e.g. Entrance_0_1)
         const parts = name.split('_') // ["Entrance", "0", "1"]
         if (parts.length < 3) return
@@ -101,6 +99,8 @@ export default class DoorManager {
             // Fade Out
             const overlay = document.getElementById('transition-overlay')
             if (overlay) overlay.classList.add('active')
+
+            this.experience.audioManager.play('ui_whoosh')
             
             // Wait for fade
             await new Promise(resolve => setTimeout(resolve, 500))
@@ -117,8 +117,6 @@ export default class DoorManager {
             // Set State
             this.lastTriggeredEntrance = sibling
             
-            console.log(`Teleported to ${siblingName} (Room_${targetId})`)
-
             // Wait a frame or small delay to let things settle?
             await new Promise(resolve => setTimeout(resolve, 100))
 
