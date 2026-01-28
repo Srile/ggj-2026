@@ -4,6 +4,7 @@ import Dialogue from './Dialogue'
 import Lobotomite from './Lobotomite'
 import Interactable from './Interactable'
 import InteractionBubble from './InteractionBubble'
+import Inventory from './Inventory'
 import NavigationManager from '../core/NavigationManager'
 import RoomManager from './RoomManager'
 import DoorManager from './DoorManager'
@@ -15,6 +16,7 @@ export default class World {
     levels: any
     lobotomite?: Lobotomite
     dialogue: Dialogue
+    inventory: Inventory
     interactables: Interactable[]
     navigationManager: NavigationManager
     roomManager: RoomManager
@@ -27,6 +29,7 @@ export default class World {
         this.scene = this.experience.scene
         this.resources = this.experience.resources
         this.dialogue = new Dialogue()
+        this.inventory = new Inventory()
         this.interactables = []
         this.navigationManager = new NavigationManager()
         this.roomManager = new RoomManager(this.navigationManager)

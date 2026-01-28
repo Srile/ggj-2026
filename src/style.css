@@ -120,7 +120,231 @@ body {
     transition: opacity 0.5s ease;
 }
 
-#transition-overlay.active {
+#face-swapper-container {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    align-items: center; /* Center items vertically */
+    gap: 20px;
+    z-index: 200;
+    pointer-events: auto;
+    background: rgba(0, 0, 0, 0.9);
+    padding: 20px;
+    border-radius: 20px;
+    border: 2px solid white;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.8);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+    width: 670px;
+    height: 350px;
+    overflow: hidden; /* Ensure content doesn't overflow during transition */
+}
+
+/* Closed State (HUD Icon) */
+#face-swapper-container.closed {
+    top: 80px;
+    left: calc(100% - 80px); /* Top Right corner */
+    transform: translate(-50%, -50%); /* Still center anchor, but position changed */
+    padding: 0;
+    border-radius: 50%;
+    width: 80px;
+    height: 80px;
+    overflow: hidden;
+    gap: 0;
+    background: transparent;
+    border: 2px solid white;
+    box-shadow: 0 0 10px rgba(0,0,0,0.5);
+    cursor: pointer;
+}
+
+#face-swapper-container.closed:hover {
+    transform: translate(-50%, -50%) scale(1.1);
+}
+
+#face-wrapper {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    transition: all 0.5s ease;
+    z-index: 5; /* Ensure face is always on top */
+}
+
+#face-swapper-container.closed #face-wrapper {
+    width: 100%;
+    height: 100%;
+}
+
+#face-preview {
+    position: relative;
+    width: 100%;
+    height: 100%;
+}
+
+.face-layer {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100%; /* Determine width based on the base face width */
+    height: auto;
+    object-fit: contain;
+    pointer-events: none; /* Let clicks pass through overlays to the preview container */
+}
+
+/* Specific Positioning for Face Parts */
+/* These values are estimated to fit ui_face_base.webp logic. Adjust as needed. */
+#face-base {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cover for the round button look */
+    border-radius: inherit; /* Inherit rounded corners from container in closed state */
+}
+
+#face-swapper-container:not(.closed) #face-base {
+    object-fit: contain; /* Full face in open mode */
+    border-radius: 0;
+}
+
+#face-eyes {
+    top: 24%; /* Adjust based on valid eye position */
+    width: 55%;
+}
+
+#face-nose {
+    top: 30%;
+    width: 25%;
+}
+
+#face-mouth {
+    top: 64%;
+    width: 40%;
+}
+
+#inventory-panel {
+    width: 300px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    transition: opacity 0.3s ease 0.2s, transform 0.3s ease 0.2s; /* Delay to let container open first */
     opacity: 1;
-    pointer-events: all;
+    transform: translateX(0);
+}
+
+#face-swapper-container.closed #inventory-panel {
+    /* display: none; Removed to allow transition */
+    opacity: 0;
+    transform: translateX(-20px);
+    pointer-events: none;
+    position: absolute; /* Remove from flow so it doesn't expand container */
+}
+
+#inventory-tabs {
+    display: flex;
+    gap: 10px;
+}
+
+.tab-btn {
+    flex: 1;
+    background: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 5px;
+    cursor: pointer;
+    font-family: inherit;
+    border-radius: 5px;
+}
+
+.tab-btn.active {
+    background: white;
+    color: black;
+}
+
+#inventory-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+    background: rgba(255, 255, 255, 0.1);
+    padding: 10px;
+    border-radius: 10px;
+    height: 100%;
+    align-content: start;
+}
+
+.inventory-item {
+    width: 80px;
+    height: 80px;
+    background: rgba(0, 0, 0, 0.5);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    border-radius: 5px;
+    cursor: grab;
+    transition: transform 0.2s;
+}
+
+.inventory-item:hover {
+    transform: scale(1.1);
+    border-color: white;
+}
+
+.inventory-item img {
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    pointer-events: none;
+}
+
+#close-inventory-btn {
+    align-self: flex-end; /* Position at bottom or top right inside panel */
+    margin-top: 10px;
+    background: transparent;
+    border: 1px solid white;
+    color: white;
+    padding: 5px 15px;
+    cursor: pointer;
+    border-radius: 5px;
+    font-family: inherit;
+}
+#close-inventory-btn:hover {
+    background: white;
+    color: black;
+}
+
+.hud-btn {
+   display: none; /* Removed the old button */
+}
+
+.hidden {
+    display: none !important;
+}
+
+@media (max-width: 768px) {
+    #face-swapper-container {
+        flex-direction: column;
+        width: 90vw;
+        height: auto;
+        min-height: 500px;
+        padding: 15px;
+        gap: 15px;
+    }
+
+    #face-swapper-container.closed {
+        width: 60px;
+        height: 60px;
+        top: 20px;
+        left: calc(100% - 20px);
+        min-height: 0;
+    }
+
+    #face-wrapper {
+        width: 250px;
+        height: 250px;
+    }
+
+    #inventory-panel {
+        width: 100%;
+        max-height: 250px;
+    }
+
+    #inventory-grid {
+        overflow-y: auto;
+    }
 }

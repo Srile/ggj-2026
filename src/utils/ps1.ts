@@ -5,7 +5,21 @@ const RESOLUTION = new THREE.Vector2(320, 240)
 export function enablePS1Style(object: THREE.Object3D) {
     object.traverse((child) => {
         if (child instanceof THREE.Mesh) {
-            modifyMaterial(child.material)
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+            materials.forEach(material => {
+                modifyMaterial(material);
+                
+                // Apply nearest filtering to all relevant maps for that sharp PS1 look
+                const maps = ['map', 'alphaMap', 'normalMap', 'specularMap', 'emissiveMap', 'roughnessMap', 'metalnessMap'];
+                maps.forEach(mapName => {
+                    const map = (material as any)[mapName];
+                    if (map && map instanceof THREE.Texture) {
+                        map.minFilter = THREE.NearestFilter;
+                        map.magFilter = THREE.NearestFilter;
+                        map.needsUpdate = true;
+                    }
+                });
+            });
         }
     })
 }

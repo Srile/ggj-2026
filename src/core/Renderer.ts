@@ -43,7 +43,7 @@ export default class Renderer {
 
         // Post Processing - PS1 Style
         this.composer = new EffectComposer(this.instance)
-        const renderPixelatedPass = new RenderPixelatedPass(4, this.scene, this.camera.instance, {
+        const renderPixelatedPass = new RenderPixelatedPass(8, this.scene, this.camera.instance, {
             normalEdgeStrength: 0.3,
             depthEdgeStrength: 0.0
         })
