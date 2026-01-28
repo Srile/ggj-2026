@@ -79,7 +79,7 @@ export default class DoorManager {
         }
     }
 
-    async triggerEntrance(name: string, entrance: THREE.Mesh) {
+    async triggerEntrance(name: string, _entrance: THREE.Mesh) {
         console.log(`Triggered ${name}`)
         
         // Parse name: Entrance_Source_Target (e.g. Entrance_0_1)
