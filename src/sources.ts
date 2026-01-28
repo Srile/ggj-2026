@@ -1,8 +1,8 @@
 export default [
     {
-        name: 'kitchen',
+        name: 'levels',
         type: 'gltfModel',
-        path: 'kitchen.glb'
+        path: 'levels.glb'
     },
     {
         name: 'character',

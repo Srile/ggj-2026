@@ -2,10 +2,10 @@ import * as THREE from 'three'
 
 const RESOLUTION = new THREE.Vector2(320, 240)
 
-export function enablePS1Style(scene: THREE.Scene) {
-    scene.traverse((object) => {
-        if (object instanceof THREE.Mesh) {
-            modifyMaterial(object.material)
+export function enablePS1Style(object: THREE.Object3D) {
+    object.traverse((child) => {
+        if (child instanceof THREE.Mesh) {
+            modifyMaterial(child.material)
         }
     })
 }

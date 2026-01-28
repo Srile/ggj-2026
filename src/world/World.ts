@@ -1,21 +1,24 @@
 import * as THREE from 'three'
 import Experience from '../core/Experience'
-import { enablePS1Style } from '../utils/ps1'
 import Dialogue from './Dialogue'
 import Lobotomite from './Lobotomite'
 import Interactable from './Interactable'
 import InteractionBubble from './InteractionBubble'
 import NavigationManager from '../core/NavigationManager'
+import RoomManager from './RoomManager'
+import DoorManager from './DoorManager'
 
 export default class World {
     experience: Experience
     scene: THREE.Scene
     resources: any
-    kitchen: any
+    levels: any
     lobotomite?: Lobotomite
     dialogue: Dialogue
     interactables: Interactable[]
     navigationManager: NavigationManager
+    roomManager: RoomManager
+    doorManager: DoorManager
 
     interactionBubble: InteractionBubble
 
@@ -25,10 +28,13 @@ export default class World {
         this.resources = this.experience.resources
         this.dialogue = new Dialogue()
         this.interactables = []
+        this.navigationManager = new NavigationManager()
+        this.roomManager = new RoomManager(this.navigationManager)
+        this.doorManager = new DoorManager(this.roomManager)
 
         // Wait for resources
         this.resources.on('ready', () => {
-            this.setKitchen()
+            this.setLevels()
             this.dialogue.setLanguage(this.resources.items.dialogue)
             // Test dialogue
             // this.dialogue.show('welcome') // Removed auto-show for test
@@ -47,17 +53,19 @@ export default class World {
         // Interaction Bubble
         this.interactionBubble = new InteractionBubble()
         this.scene.add(this.interactionBubble)
-
-        this.navigationManager = new NavigationManager()
     }
 
-    setKitchen() {
-        this.kitchen = this.resources.items.kitchen
-        enablePS1Style(this.kitchen.scene)
-        this.scene.add(this.kitchen.scene)
-        // this.kitchen.scene.scale.set(8, 8, 8)
+    setLevels() {
+        this.levels = this.resources.items.levels
+        // Add the whole scene but room manager will hide/show parts
+        this.scene.add(this.levels.scene)
         
-        this.navigationManager.setLevel(this.kitchen.scene)
+        // Setup Managers
+        this.roomManager.setLevel(this.levels.scene)
+        this.doorManager.setLevel(this.levels.scene)
+        
+        // Start in Room 0
+        this.roomManager.setRoom('Room_0')
     }
 
     setCharacter() {
@@ -87,6 +95,9 @@ export default class World {
     update() {
         if (this.lobotomite)
             this.lobotomite.update()
+        
+        if (this.doorManager)
+            this.doorManager.update()
 
         // Check for interactables to show bubble
         if (this.dialogue.overlay && !this.dialogue.overlay.classList.contains('hidden')) {

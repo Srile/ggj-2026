@@ -213,5 +213,12 @@ export default class Camera {
             // projects onto the XZ plane.
         }
     }
+
+    teleport(position: THREE.Vector3) {
+        this.instance.position.copy(position)
+        this._startPos.copy(position)
+        this._endPos.copy(position)
+        this.velocity.set(0, 0, 0)
+    }
 }
 
