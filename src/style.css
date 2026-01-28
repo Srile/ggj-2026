@@ -120,6 +120,11 @@ body {
     transition: opacity 0.5s ease;
 }
 
+#transition-overlay.active {
+    opacity: 1;
+    pointer-events: all;
+}
+
 #face-swapper-container {
     position: absolute;
     top: 50%;

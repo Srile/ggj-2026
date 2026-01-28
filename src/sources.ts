@@ -22,8 +22,25 @@ export default [
     {
         name: 'beep_mind',
         type: 'audioSequence',
-        path: 'audio/sfx/beep_mind',
+        path: 'audio/sfx/beeps/beep_mind',
         count: 4,
         extension: 'webm'
-    }
+    },
+    {
+        name: 'ui_meat',
+        type: 'audioSequence',
+        path: 'audio/sfx/ui/ui_meat',
+        count: 4,
+        extension: 'webm'
+    },
+    {
+        name: 'ui_click',
+        type: 'audio',
+        path: 'audio/sfx/ui/ui_click.webm'
+    },
+    {
+        name: 'ui_whoosh',
+        type: 'audio',
+        path: 'audio/sfx/ui/ui_whoosh.webm'
+    },
 ]
