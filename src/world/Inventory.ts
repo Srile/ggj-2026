@@ -176,7 +176,7 @@ export default class Inventory {
         this.experience.audioManager.play('ui_meat')
 
         if (layer) {
-            layer.src = `/face/${item}`
+            layer.src = `face/${item}`
             layer.classList.remove('hidden')
         }
     }
