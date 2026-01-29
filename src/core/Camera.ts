@@ -212,6 +212,8 @@ export default class Camera {
             // but we ensure it here if needed. Actually moveForward in three.js PLC uses the camera's local forward vector
             // projects onto the XZ plane.
         }
+
+        this.experience.audioManager.setListener(this.instance.position, this.instance.quaternion)
     }
 
     teleport(position: THREE.Vector3) {

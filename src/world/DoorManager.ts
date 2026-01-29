@@ -100,7 +100,7 @@ export default class DoorManager {
             const overlay = document.getElementById('transition-overlay')
             if (overlay) overlay.classList.add('active')
 
-            this.experience.audioManager.play('ui_whoosh')
+            this.experience.audioManager.play('door_transition')
             
             // Wait for fade
             await new Promise(resolve => setTimeout(resolve, 500))

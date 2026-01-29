@@ -3,6 +3,7 @@ import Character from './Character'
 
 export default class Lobotomite extends Character {
     mixer: THREE.AnimationMixer | null = null
+    soundId: number | undefined
 
     constructor(resource: any) {
         super(resource.scene)
@@ -13,6 +14,11 @@ export default class Lobotomite extends Character {
             const action = this.mixer.clipAction(resource.animations[0])
             action.play()
         }
+        // this.playSound()
+    }
+
+    playSound() {
+        this.soundId = this.experience.audioManager.playSpatial('lobotomite_breathing', this.object.position, true)
     }
 
     update() {

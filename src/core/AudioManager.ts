@@ -74,24 +74,14 @@ export default class AudioManager {
         Howler.volume(volume)
     }
 
-    update() {
-        // Update listener position via Camera
-        // Howler uses a global listener
-        const camera = this.experience.camera.instance
-        if (camera) {
-            const position = new THREE.Vector3()
-            const direction = new THREE.Vector3()
-            
-            camera.getWorldPosition(position)
-            camera.getWorldDirection(direction)
+    setListener(position: THREE.Vector3, quaternion: THREE.Quaternion) {
+        const forward = new THREE.Vector3(0, 0, -1).applyQuaternion(quaternion)
+        const up = new THREE.Vector3(0, 1, 0).applyQuaternion(quaternion)
 
-            Howler.pos(position.x, position.y, position.z)
-            // Howler orientation is (x, y, z, xUp, yUp, zUp)
-            // We can simplify or just set orientation if needed. 
-            // Standard Web Audio API listener use forward and up vectors.
-            // Howler wrapper might be slightly different, let's check docs or assuming standard behavior.
-            // For now, simpler is creating a consistent listener position.
-            Howler.orientation(direction.x, direction.y, direction.z, 0, 1, 0)
-        }
+        Howler.pos(position.x, position.y, position.z)
+        Howler.orientation(forward.x, forward.y, forward.z, up.x, up.y, up.z)
+    }
+
+    update() {
     }
 }

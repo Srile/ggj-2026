@@ -43,4 +43,14 @@ export default [
         type: 'audio',
         path: 'audio/sfx/ui/ui_whoosh.webm'
     },
+    {
+        name: 'door_transition',
+        type: 'audio',
+        path: 'audio/sfx/door_transition.webm'
+    },
+    {
+        name: 'lobotomite_breathing',
+        type: 'audio',
+        path: 'audio/sfx/lobotomite_breathing.webm'
+    },
 ]
