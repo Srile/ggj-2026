@@ -18,6 +18,7 @@ export default class Inventory {
 
     // State
     isOpen: boolean = false
+    hasChanged: boolean = false
     currentCategory: 'eyes' | 'nose' | 'mouth' = 'eyes'
     
     items: any = {
@@ -90,6 +91,7 @@ export default class Inventory {
         this.container?.classList.remove('closed')
         this.experience.controls.setEnabled(false)
         this.experience.audioManager.play('ui_whoosh')
+        this.hasChanged = false
     }
 
     close() {
@@ -97,7 +99,9 @@ export default class Inventory {
         this.container?.classList.add('closed')
         this.experience.controls.setEnabled(true)
         this.experience.audioManager.play('ui_whoosh')
-        this.experience.videoManager.play('facewear-video')
+        if (this.hasChanged) {
+            this.experience.videoManager.play('facewear-video')
+        }
     }
 
     setCategory(category: 'eyes' | 'nose' | 'mouth') {
@@ -174,10 +178,15 @@ export default class Inventory {
         }
 
         this.experience.audioManager.play('ui_meat')
+        this.hasChanged = true
 
         if (layer) {
-            layer.src = `face/${item}`
-            layer.classList.remove('hidden')
+            if (layer.src.includes(item) && !layer.classList.contains('hidden')) {
+                layer.classList.add('hidden')
+            } else {
+                layer.src = `face/${item}`
+                layer.classList.remove('hidden')
+            }
         }
     }
 }
