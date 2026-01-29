@@ -20,7 +20,11 @@ export default class Inventory {
     isOpen: boolean = false
     hasChanged: boolean = false
     currentCategory: 'eyes' | 'nose' | 'mouth' = 'eyes'
+    categories: ('eyes' | 'nose' | 'mouth')[] = ['eyes', 'nose', 'mouth']
     
+    focusedArea: 'tabs' | 'grid' | 'close' = 'grid'
+    focusedIndex: number = 0
+
     items: any = {
         eyes: [
             'ui_eyes_black.webp',
@@ -77,12 +81,127 @@ export default class Inventory {
             tab.addEventListener('click', (e) => {
                 const category = (e.target as HTMLElement).dataset.category as 'eyes' | 'nose' | 'mouth'
                 this.setCategory(category)
+                this.focusedArea = 'tabs' // If clicked, focus tabs
+                this.updateSelection()
             })
         })
 
         // Initial setup
         this.setCategory('eyes')
         this.setupDragAndDrop()
+
+        this.experience.controls.on('inventory', () => {
+            if (this.isOpen) {
+                this.close()
+            } else {
+                this.open()
+            }
+        })
+
+        this.setupInput()
+    }
+
+    setupInput() {
+        this.experience.controls.on('navigateUp', () => {
+            if (!this.isOpen) return
+            if (this.focusedArea === 'grid') {
+                if (this.focusedIndex < 3) {
+                    this.focusedArea = 'tabs'
+                } else {
+                    this.focusedIndex -= 3
+                }
+            } else if (this.focusedArea === 'close') {
+                this.focusedArea = 'grid'
+                // Ensure index is valid for current category
+                const maxIndex = this.items[this.currentCategory].length - 1
+                if (this.focusedIndex > maxIndex) {
+                    this.focusedIndex = maxIndex
+                }
+            }
+            this.updateSelection()
+        })
+
+        this.experience.controls.on('navigateDown', () => {
+            if (!this.isOpen) return
+            if (this.focusedArea === 'tabs') {
+                this.focusedArea = 'grid'
+                this.focusedIndex = 0
+            } else if (this.focusedArea === 'grid') {
+                const maxIndex = this.items[this.currentCategory].length - 1
+                if (this.focusedIndex + 3 <= maxIndex) {
+                    this.focusedIndex += 3
+                } else {
+                    // Navigate to close/confirm button if at bottom
+                    this.focusedArea = 'close'
+                }
+            }
+            this.updateSelection()
+        })
+
+        this.experience.controls.on('navigateLeft', () => {
+            if (!this.isOpen) return
+            if (this.focusedArea === 'tabs') {
+                const currentIdx = this.categories.indexOf(this.currentCategory)
+                const newIdx = (currentIdx - 1 + this.categories.length) % this.categories.length
+                this.setCategory(this.categories[newIdx])
+            } else if (this.focusedArea === 'grid') {
+                if (this.focusedIndex % 3 !== 0) {
+                    this.focusedIndex--
+                }
+            }
+            this.updateSelection()
+        })
+
+        this.experience.controls.on('navigateRight', () => {
+            if (!this.isOpen) return
+            if (this.focusedArea === 'tabs') {
+                const currentIdx = this.categories.indexOf(this.currentCategory)
+                const newIdx = (currentIdx + 1) % this.categories.length
+                this.setCategory(this.categories[newIdx])
+            } else if (this.focusedArea === 'grid') {
+                const maxIndex = this.items[this.currentCategory].length - 1
+                if ((this.focusedIndex + 1) % 3 !== 0 && this.focusedIndex < maxIndex) {
+                    this.focusedIndex++
+                }
+            }
+            this.updateSelection()
+        })
+
+        this.experience.controls.on('interact', () => {
+            if (!this.isOpen) return
+            if (this.focusedArea === 'grid') {
+                const item = this.items[this.currentCategory][this.focusedIndex]
+                if (item) {
+                    this.equip(this.currentCategory, item)
+                }
+            } else if (this.focusedArea === 'close') {
+                this.close()
+            }
+        })
+    }
+
+    updateSelection() {
+        // Clear styles
+        this.tabs.forEach(tab => tab.classList.remove('focused'))
+        if (this.inventoryGrid) {
+            Array.from(this.inventoryGrid.children).forEach(child => child.classList.remove('selected'))
+        }
+        if (this.closeBtn) {
+            this.closeBtn.classList.remove('focused')
+        }
+
+        if (this.focusedArea === 'tabs') {
+            const currentTab = Array.from(this.tabs).find(t => (t as HTMLElement).dataset.category === this.currentCategory)
+            if (currentTab) currentTab.classList.add('focused')
+        } else if (this.focusedArea === 'grid') {
+            if (this.inventoryGrid && this.inventoryGrid.children[this.focusedIndex]) {
+                this.inventoryGrid.children[this.focusedIndex].classList.add('selected')
+            }
+        } else if (this.focusedArea === 'close') {
+            if (this.closeBtn) {
+                this.closeBtn.classList.add('focused')
+            }
+        }
     }
 
     open() {
@@ -90,14 +209,25 @@ export default class Inventory {
         this.isOpen = true
         this.container?.classList.remove('closed')
         this.experience.controls.setEnabled(false)
+        // Unlock pointer to stop camera movement and allow interactions
+        this.experience.camera.controls.unlock()
+        
         this.experience.audioManager.play('ui_whoosh')
         this.hasChanged = false
+        
+        // Reset selection
+        this.focusedArea = 'grid'
+        this.focusedIndex = 0
+        this.updateSelection()
     }
 
     close() {
         this.isOpen = false
         this.container?.classList.add('closed')
         this.experience.controls.setEnabled(true)
+        // Re-lock pointer
+        this.experience.camera.controls.lock()
+
         this.experience.audioManager.play('ui_whoosh')
         if (this.hasChanged) {
             this.experience.videoManager.play('facewear-video')
@@ -121,7 +251,7 @@ export default class Inventory {
         // Populate Grid
         if (this.inventoryGrid) {
             this.inventoryGrid.innerHTML = ''
-            this.items[category].forEach((item: string) => {
+            this.items[category].forEach((item: string, index: number) => {
                 const itemEl = document.createElement('div')
                 itemEl.classList.add('inventory-item')
                 itemEl.draggable = true
@@ -137,11 +267,21 @@ export default class Inventory {
                 
                 // Click to equip
                 itemEl.addEventListener('click', () => {
+                   this.focusedArea = 'grid'
+                   this.focusedIndex = index
+                   this.updateSelection()
                    this.equip(category, item)
                 })
 
                 this.inventoryGrid?.appendChild(itemEl)
             })
+            // If we are in grid mode, we need to ensure selection checks range
+            if (this.focusedArea === 'grid') {
+                 if (this.focusedIndex >= this.items[category].length) {
+                     this.focusedIndex = this.items[category].length - 1
+                 }
+                 this.updateSelection()
+            }
         }
     }
 
@@ -190,3 +330,4 @@ export default class Inventory {
         }
     }
 }
+

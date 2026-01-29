@@ -293,9 +293,13 @@ body {
     transition: transform 0.2s;
 }
 
-.inventory-item:hover {
+.inventory-item:hover, .inventory-item.selected {
     transform: scale(1.1);
     border-color: white;
+}
+
+.tab-btn:focus, .tab-btn.focused {
+    box-shadow: 0 0 0 2px #ffcc00;
 }
 
 .inventory-item img {
@@ -316,7 +320,7 @@ body {
     border-radius: 5px;
     font-family: inherit;
 }
-#close-inventory-btn:hover {
+#close-inventory-btn:hover, #close-inventory-btn.focused {
     background: white;
     color: black;
 }

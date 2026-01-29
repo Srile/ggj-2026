@@ -16,7 +16,8 @@ export default class Controls extends EventEmitter {
             backward: false,
             left: false,
             right: false,
-            shift: false
+            shift: false,
+            inventory: false
         }
         this.enabled = true
 
@@ -47,6 +48,10 @@ export default class Controls extends EventEmitter {
                 case 'KeyE':
                     this.trigger('interact')
                     break
+                case 'KeyI':
+                case 'Escape':
+                    this.trigger('inventory')
+                    break
                 case 'ArrowUp':
                 case 'KeyW':
                     this.trigger('navigateUp')
@@ -54,6 +59,14 @@ export default class Controls extends EventEmitter {
                 case 'ArrowDown':
                 case 'KeyS':
                     this.trigger('navigateDown')
+                    break
+                case 'ArrowLeft':
+                case 'KeyA':
+                    this.trigger('navigateLeft')
+                    break
+                case 'ArrowRight':
+                case 'KeyD':
+                    this.trigger('navigateRight')
                     break
             }
             return
@@ -85,6 +98,10 @@ export default class Controls extends EventEmitter {
             case 'Space':
             case 'KeyE':
                 this.trigger('interact')
+                break
+            case 'KeyI':
+            case 'Escape':
+                this.trigger('inventory')
                 break
         }
 
