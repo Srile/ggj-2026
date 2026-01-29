@@ -7,6 +7,7 @@ import Renderer from './Renderer'
 import World from '../world/World'
 import Resources from '../utils/Resources'
 import AudioManager from './AudioManager'
+import VideoManager from './VideoManager'
 import sources from '../sources'
 
 let instance: Experience | null = null
@@ -22,6 +23,7 @@ export default class Experience {
     world!: World
     controls!: Controls
     audioManager!: AudioManager
+    videoManager!: VideoManager
     
     constructor(canvas?: HTMLCanvasElement) {
         // Singleton
@@ -45,6 +47,7 @@ export default class Experience {
         this.controls = new Controls()
         this.camera = new Camera()
         this.audioManager = new AudioManager()
+        this.videoManager = new VideoManager()
         this.renderer = new Renderer()
         this.world = new World()
 

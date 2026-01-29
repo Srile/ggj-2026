@@ -97,6 +97,7 @@ export default class Inventory {
         this.container?.classList.add('closed')
         this.experience.controls.setEnabled(true)
         this.experience.audioManager.play('ui_whoosh')
+        this.experience.videoManager.play('facewear-video')
     }
 
     setCategory(category: 'eyes' | 'nose' | 'mouth') {
