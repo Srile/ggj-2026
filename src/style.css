@@ -40,6 +40,14 @@ body {
     pointer-events: none;
 }
 
+#dialogue-speaker {
+    margin: 0 0 10px 0;
+    font-size: 1.4rem;
+    font-weight: bold;
+    color: #ffcc00; /* Distinct color, maybe make it customizable later */
+    text-shadow: 2px 2px 0px rgba(0,0,0,0.5);
+}
+
 #dialogue-text {
     margin: 0;
     min-height: 1.5em;

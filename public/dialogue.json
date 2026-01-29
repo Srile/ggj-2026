@@ -1,13 +1,16 @@
 {
     "welcome": {
+        "speaker": "Lobotomite",
         "text": "Welcome to the kitchen!",
         "next": "stove"
     },
     "stove": {
+        "speaker": "Lobotomite",
         "text": "It's a stove. You can cook here.",
         "next": "fridge"
     },
     "fridge": {
+        "speaker": "Lobotomite",
         "text": "It's a fridge. Check for ingredients.",
         "next": "check_ingredients"
     },

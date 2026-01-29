@@ -8,6 +8,7 @@ export default class Dialogue {
     
     // UI Elements
     overlay: HTMLElement | null
+    speakerElement: HTMLElement | null
     textElement: HTMLElement | null
     arrowElement: HTMLElement | null
     choicesElement: HTMLElement | null
@@ -27,6 +28,7 @@ export default class Dialogue {
         
         // UI
         this.overlay = document.getElementById('dialogue-container')
+        this.speakerElement = document.getElementById('dialogue-speaker')
         this.textElement = document.getElementById('dialogue-text')
         this.arrowElement = document.getElementById('dialogue-arrow')
         this.choicesElement = document.getElementById('dialogue-choices')
@@ -80,6 +82,15 @@ export default class Dialogue {
         if(this.choicesElement) {
             this.choicesElement.classList.add('hidden')
             this.choicesElement.innerHTML = '' // Clear previous choices
+        }
+
+        if (this.speakerElement) {
+            this.speakerElement.innerText = this.currentTextObject.speaker || '' // Default to empty if no speaker
+            if (!this.currentTextObject.speaker) {
+                this.speakerElement.classList.add('hidden')
+            } else {
+                this.speakerElement.classList.remove('hidden')
+            }
         }
 
         this.typeText(this.currentTextObject.text)
