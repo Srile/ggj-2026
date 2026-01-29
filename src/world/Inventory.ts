@@ -123,7 +123,7 @@ export default class Inventory {
                 itemEl.draggable = true
                 
                 const img = document.createElement('img')
-                img.src = `/face/${item}`
+                img.src = `face/${item}`
                 itemEl.appendChild(img)
 
                 // Drag Events
